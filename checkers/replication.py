@@ -3,7 +3,7 @@ import datetime
 import os
 import time
 import logging
-
+from pprint import pformat
 
 class ReplicationChecker(object):
     def __init__(self, project_directory, lag_interval, lag_duration, user,
@@ -45,19 +45,23 @@ class ReplicationChecker(object):
                 port=self.port
             )
 
-            cursor = cnx.cursor()
+            cursor = cnx.cursor(dictionary=True)
             query = 'SHOW SLAVE STATUS;'
 
             cursor.execute(query)
             replication_status_row = cursor.fetchall()[0]
-            last_error_no = replication_status_row[18]
-            last_error = replication_status_row[19]
-            seconds_behind_master = replication_status_row[32]
-            slave_sql_running_state = replication_status_row[44]
+            logging.debug(pformat(replication_status_row))
 
+            last_error_no = replication_status_row['Last_Errno']
             logging.info('Last Error No: ' + str(last_error_no))
-            logging.info('Last Error: ' + str(last_error_no))
+
+            last_error = replication_status_row['Last_Error']
+            logging.info('Last Error: ' + str(last_error))
+
+            seconds_behind_master = replication_status_row['Seconds_Behind_Master']
             logging.info('Seconds behind master: ' + str(seconds_behind_master))
+
+            slave_sql_running_state = replication_status_row['Last_SQL_Error']
             logging.info(
                 'slave_sql_running_state: ' + str(slave_sql_running_state))
 
@@ -88,7 +92,7 @@ class ReplicationChecker(object):
         self.write_lock('danger')
 
     def track_lag(self, slave_sql_running_state, seconds_behind_master):
-        logging.debug('There is a lag of more than 300 seconds')
+        logging.debug('There is a lag of more than ' + str(seconds_behind_master) + ' seconds')
         if os.path.isfile(self.LAG_LOCK):
             if not os.path.isfile(self.WARNING_LOCK):
                 with open(self.LAG_LOCK, 'r') as f:
@@ -110,7 +114,7 @@ class ReplicationChecker(object):
             'status': 'warning',
             'short_message': 'Replication Lag',
             'long_message':
-                'The replica is lagging more than %s seconds'
+                'The replica is lagging more than %s seconds '
                 'behind master for longer than %s seconds. Current state: %s. '
                 'Current lag: %s seconds.'
                 % (str(self.lag_interval), str(self.lag_duration),

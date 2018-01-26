@@ -1,8 +1,17 @@
+# Optional keys are commented out with their defaults as values
 mysql:
     user: ''
     password: ''
-    host: 'localhost'
+#    host: 'localhost'
     raise_on_warnings: True
-    port: 3306
+#    port: 3306
+#    lag_interval: 300
+#    lag_duration: 1800
 
-webhook_url: 'https://hooks.slack.com/services/XXXXX/XXXXX/XXXXX'
+# Available log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+#loglevel: debug
+
+# Use special filename 'stderr' to log to console instead of logging to file.
+#logfile: replication.log
+
+#webhook_url: 'https://hooks.slack.com/services/XXXXX/XXXXX/XXXXX'
