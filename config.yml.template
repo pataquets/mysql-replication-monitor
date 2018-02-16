@@ -14,4 +14,4 @@ mysql:
 # Use special filename 'stderr' to log to console instead of logging to file.
 #logfile: replication.log
 
-#webhook_url: 'https://hooks.slack.com/services/XXXXX/XXXXX/XXXXX'
+webhook_url: 'https://hooks.slack.com/services/XXXXX/XXXXX/XXXXX'
