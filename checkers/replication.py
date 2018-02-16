@@ -5,6 +5,7 @@ import time
 import logging
 from pprint import pformat
 
+
 class ReplicationChecker(object):
     def __init__(self, project_directory, lag_interval, lag_duration, user,
                  password, host='local', port=3306):
